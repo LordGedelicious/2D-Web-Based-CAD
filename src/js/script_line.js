@@ -75,7 +75,7 @@ canvas.addEventListener('click', function(event) {
     // Add the X and Y coordinates to the vertices list
     vertices.push([2 * x / canvas.width - 1, -(2 * y / canvas.height - 1)]);
     if (vertices.length > 2) {
-        // If there are more than 2 vertices, pop the first vertex from the list
+        // If there are more than 2 vertices, pop the nearest vertex from all vertices in the canvas
         vertices.shift();
     }
     // Update the edges array
@@ -98,6 +98,19 @@ canvas.addEventListener('click', function(event) {
 
     render();
 });
+
+function getNearestVertex(x, y, verticesList) {
+    let nearestVertex = null;
+    let nearestDistance = 1000000;
+    for (let i = 0; i < verticesList.length; i++) {
+        let distance = Math.sqrt(Math.pow(x - verticesList[i][0], 2) + Math.pow(y - verticesList[i][1], 2));
+        if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestVertex = i;
+        }
+    }
+    return nearestVertex;
+};
 
 // Render the vertices
 function render() {
