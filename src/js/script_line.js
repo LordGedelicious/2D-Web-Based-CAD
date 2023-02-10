@@ -13,7 +13,7 @@ gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
 // Create color buffer and pass the color data
 let color_buffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
-let color = [ 1.0, 0.0, 0.0, 1.0,   1.0, 0.0, 0.0, 1.0 ];
+let color = [ 1.0, 0.0, 0.0, 1.0,   0.0, 1.0, 0.0, 1.0 ];
 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(color), gl.STATIC_DRAW); 
 
 // Create edge buffer to connect the vertices and load them
@@ -83,6 +83,11 @@ canvas.addEventListener('click', function(event) {
     for (let i = 0; i < vertices.length - 1; i++) {
         edges.push(i, i + 1);
     }
+
+    document.getElementById('vertex-a-x').value = vertices[0][0];
+    document.getElementById('vertex-a-y').value = vertices[0][1];
+    document.getElementById('vertex-b-x').value = vertices[1][0];
+    document.getElementById('vertex-b-y').value = vertices[1][1];
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices.flat()), gl.STATIC_DRAW);
