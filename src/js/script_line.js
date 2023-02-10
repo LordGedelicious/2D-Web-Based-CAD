@@ -1,94 +1,111 @@
-/* Step1: Prepare the canvas and get WebGL context */
+/* Preparing the canvas and get WebGL context */
+let canvas = document.getElementById('2d_canvas');
+let gl = canvas.getContext('webgl');
 
-var canvas = document.getElementById('2d_canvas');
-var gl = canvas.getContext('experimental-webgl');
-
-/* Step2: Define the geometry and store it in buffer objects */
-
-var vertices = [-0.5, 0.5, -0.5, -0.5];
-
+/* Initialize empty list to store vertices for dynamic line-making */
+let vertices = [[0.0, 0.0]];
 // Create a new buffer object
-var vertex_buffer = gl.createBuffer();
-
+let vertex_buffer = gl.createBuffer();
 // Bind an empty array buffer to it
 gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+// Note that passing the vertices data to the buffer is not done here because it's done dynamically
 
-// Pass the vertices data to the buffer
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+// Create color buffer and pass the color data
+let color_buffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
+let color = [ 1.0, 0.0, 0.0, 1.0,   1.0, 0.0, 0.0, 1.0 ];
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(color), gl.STATIC_DRAW); 
 
-// Unbind the buffer
-gl.bindBuffer(gl.ARRAY_BUFFER, null);
+// Create edge buffer to connect the vertices and load them
+let edge_buffer = gl.createBuffer();
+gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, edge_buffer);
+let edges = [ 0, 1 ]; // By default there will only be 2 edges. You can add more for the advanced features
+gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(edges), gl.STATIC_DRAW);
 
-/* Step3: Create and compile Shader programs */
+// Create vertex shader and associate it with the shader source with the colors
+let vertex_shader = gl.createShader(gl.VERTEX_SHADER);
+gl.shaderSource(vertex_shader,
+    `attribute vec2 position;
+    attribute vec4 color;
+    varying vec4 vColor;
+    void main() {
+        vColor = color;
+        gl_Position = vec4(position, 0.0, 1.0);
+    }`);
+gl.compileShader(vertex_shader);
 
-// Vertex shader source code
-var vertCode =
-   'attribute vec2 coordinates;' + 
-   'void main(void) {' + ' gl_Position = vec4(coordinates,0.0, 1.0);' + '}';
+// Create fragment shader and associate it with the shader source
+let fragment_shader = gl.createShader(gl.FRAGMENT_SHADER);
+gl.shaderSource(fragment_shader, `
+    precision mediump float;
+    varying vec4 vColor;
+    void main() {
+        gl_FragColor = vColor;
+    }`);
+gl.compileShader(fragment_shader);
 
-//Create a vertex shader object
-var vertShader = gl.createShader(gl.VERTEX_SHADER);
+// Create a shader program and attach the vertex and fragment shaders to it
+let program = gl.createProgram();
+gl.attachShader(program, vertex_shader);
+gl.attachShader(program, fragment_shader);
+// Linking and using the program
+gl.linkProgram(program);
+gl.useProgram(program);
 
-//Attach vertex shader source code
-gl.shaderSource(vertShader, vertCode);
-
-//Compile the vertex shader
-gl.compileShader(vertShader);
-
-//Fragment shader source code
-var fragCode = 'void main(void) {' + 'gl_FragColor = vec4(0.0, 0.0, 0.0, 0.1);' + '}';
-
-// Create fragment shader object
-var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
-
-// Attach fragment shader source code
-gl.shaderSource(fragShader, fragCode);
-
-// Compile the fragment shader
-gl.compileShader(fragShader);
-
-// Create a shader program object to store combined shader program
-var shaderProgram = gl.createProgram();
-
-// Attach a vertex shader
-gl.attachShader(shaderProgram, vertShader); 
-
-// Attach a fragment shader
-gl.attachShader(shaderProgram, fragShader);
-
-// Link both programs
-gl.linkProgram(shaderProgram);
-
-// Use the combined shader program object
-gl.useProgram(shaderProgram);
-
-/* Step 4: Associate the shader programs to buffer objects */
-
-//Bind vertex buffer object
+// Get the position attribute location and enable it
+let position = gl.getAttribLocation(program, 'position');
+gl.enableVertexAttribArray(position);
+// Binding the vertex buffer to the position attribute
 gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
 
-//Get the attribute location
-var coord = gl.getAttribLocation(shaderProgram, "coordinates");
+// Get the color attribute location and enable it
+let color_location = gl.getAttribLocation(program, 'color');
+gl.enableVertexAttribArray(color_location);
+// Binding the color buffer to the color attribute
+gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
+gl.vertexAttribPointer(color_location, 4, gl.FLOAT, false, 0, 0);
 
-//point an attribute to the currently bound VBO
-gl.vertexAttribPointer(coord, 2, gl.FLOAT, false, 0, 0);
+// Initially there's no vertices, so there's nothing to draw.
+// Create an event listener to add a new vertex when the user clicks on the canvas
+canvas.addEventListener('click', function(event) {
+    let x = event.clientX;
+    let y = event.clientY;
 
-//Enable the attribute
-gl.enableVertexAttribArray(coord);
+    // Add the X and Y coordinates to the vertices list
+    vertices.push([2 * x / canvas.width - 1, -(2 * y / canvas.height - 1)]);
+    if (vertices.length > 2) {
+        // If there are more than 2 vertices, pop the first vertex from the list
+        vertices.shift();
+    }
+    // Update the edges array
+    edges = [];
+    for (let i = 0; i < vertices.length - 1; i++) {
+        edges.push(i, i + 1);
+    }
 
-/* Step5: Drawing the required object (triangle) */
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices.flat()), gl.STATIC_DRAW);
 
-// Clear the canvas
-gl.clearColor(0.5, 0.5, 0.5, 0.9);
+    // Update the edge buffer with the new edges data
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, edge_buffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(edges), gl.STATIC_DRAW);
 
-// Enable the depth test
-gl.enable(gl.DEPTH_TEST); 
+    render();
+});
 
-// Clear the color buffer bit
-gl.clear(gl.COLOR_BUFFER_BIT);
+// Render the vertices
+function render() {
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    // Rebind and re-insert buffer data for vertex, color, and edge
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices.flat()), gl.STATIC_DRAW);
+    gl.drawElements(gl.LINES, edges.length, gl.UNSIGNED_SHORT, 0);
+    console.log('Rendering vertices...');
+    for (let i = 0; i < vertices.length; i++) {
+        console.log(`Vertex ${i}: ${vertices[i]}`);
+    }
+};
 
-// Set the view port
-gl.viewport(0,0,canvas.width,canvas.height);
-
-// Draw the triangle
-gl.drawArrays(gl.LINES, 0, 3);
+render();
