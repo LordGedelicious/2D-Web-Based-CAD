@@ -6,9 +6,10 @@
 <body>
     <canvas id="2d_canvas" width="500" height="500"></canvas>
     <script src="js/script_line.js"></script>
+    <script src="./helper.js"></script>
     <!-- Asumsi awalnya make line dulu --> 
     <br>
-    <div>
+    <div class="panel">
         <h3>Customizations and Infos</h3>
         <table>
             <tr>
@@ -36,5 +37,6 @@
                 <td><input type="checkbox" id="multiline-checkbox"></td>
             </tr>
         </table>
+        <input type="color" id="color-picker" name="head" value="#e66465" oninput="changeColor(this.value)" >
     </div>
 </body>
