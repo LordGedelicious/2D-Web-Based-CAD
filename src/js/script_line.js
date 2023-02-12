@@ -93,8 +93,8 @@ canvas.addEventListener('click', function(event) {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices.flat()), gl.STATIC_DRAW);
 
     // Update the edge buffer with the new edges data
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, edge_buffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(edges), gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, edge_buffer); 
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(edges), gl.STATIC_DRAW); //gambar garis
 
     render();
 });
