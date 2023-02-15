@@ -2,6 +2,11 @@ const hexColortoRGB = (hex)=>{
     return [Number('0x'+hex.substr(1,2)),Number('0x'+hex.substr(3,2)),Number('0x'+hex.substr(5,2))]
 }
 
+const getDistance = (x1,x2,y1,y2)=>{
+    let x = x1-x2;
+    let y = y1-y2;
+    return Math.sqrt(x*x+y*y)
+}
 
 class Color{
     constructor(red, green, blue){
@@ -32,6 +37,7 @@ class Shape{
     draw(){
         let cvertices = [];
         for(let i =0;i<this.vertices.length;i++){
+            console.log("spec:",...this.vertices[i],...this.colors[i])
             cvertices.push(...this.vertices[i],...this.colors[i]);
         }
 
@@ -54,5 +60,10 @@ class Rectangle extends Shape{
             y2 = y1 + (x2-x1)
         }
         super(colors, [[x1,y1], [x1,y2], [x2,y2], [x2,y1]])
+    }
+
+    draw(){
+        console.log("drawing rectangle")
+        super.draw();
     }
 }
