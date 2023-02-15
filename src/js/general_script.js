@@ -75,7 +75,7 @@ canvas.addEventListener('click', (e)=>{
     let kindOfShape = setShape(tempShape);
 
     if(state.isDone){
-        shapes.push(new kindOfShape(state.pass_val.x,state.pass_val.y,x,y,tempColor)); 
+        shapes.push(new kindOfShape(state.pass_val.x,state.pass_val.y,x,y,Array(4).fill(tempColor))); 
         state.isDone = 0;
         console.log("masuk shape")
         render();

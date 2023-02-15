@@ -36,6 +36,7 @@ class Shape{
 
     draw(){
         let cvertices = [];
+        console.log("masuk draw")
         for(let i =0;i<this.vertices.length;i++){
             console.log("spec:",...this.vertices[i],...this.colors[i])
             cvertices.push(...this.vertices[i],...this.colors[i]);
@@ -63,7 +64,6 @@ class Rectangle extends Shape{
     }
 
     draw(){
-        console.log("drawing rectangle")
         super.draw();
     }
 }
