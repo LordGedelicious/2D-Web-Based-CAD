@@ -73,10 +73,18 @@ canvas.addEventListener('click', function(event) {
     let y = event.clientY;
 
     // Add the X and Y coordinates to the vertices list
-    vertices.push([2 * x / canvas.width - 1, -(2 * y / canvas.height - 1)]);
-    if (vertices.length > 2) {
+    if (vertices.length > 1) {
         // If there are more than 2 vertices, pop the nearest vertex from all vertices in the canvas
-        vertices.shift();
+        let nearestVertex = getNearestVertex(2 * x / canvas.width - 1, -(2 * y / canvas.height - 1), vertices);
+        if (nearestVertex == 0) {
+            vertices.shift();
+            vertices.unshift([2 * x / canvas.width - 1, -(2 * y / canvas.height - 1)]);
+        } else if (nearestVertex == 1) {
+            vertices.pop();
+            vertices.push([2 * x / canvas.width - 1, -(2 * y / canvas.height - 1)]);
+        }
+    } else {
+        vertices.push([2 * x / canvas.width - 1, -(2 * y / canvas.height - 1)]);
     }
     // Update the edges array
     edges = [];
