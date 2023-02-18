@@ -21,9 +21,10 @@ class Color{
 }
 
 class Shape{
-    constructor(color, vertices){
+    constructor(color, vertices,edges){
         this.vertices = vertices;
         this.colors = color;
+        this.edges = edges;
     }
 
     toString(){
@@ -34,25 +35,15 @@ class Shape{
         `
     }
 
-    draw(){
-        let cvertices = [];
-        console.log("masuk draw")
-        for(let i =0;i<this.vertices.length;i++){
-            console.log("spec:",...this.vertices[i],...this.colors[i])
-            cvertices.push(...this.vertices[i],...this.colors[i]);
-        }
-
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cvertices), gl.STATIC_DRAW);
-
-
-        let count = this.vertices.length;
-
-        gl.drawArrays(gl.TRIANGLE_FAN, 0, count)
+    draw(shape){
+        globEdges.push(...this.edges)
+        globVertices.push(...this.vertices)
+        updateDrawing(shape)
     }
 
 }
 
-class Rectangle extends Shape{ 
+class Square extends Shape{ 
     constructor(x1,y1,x2,y2, colors){
         // gua masi mikir ytansformasinya
         if((x1<x2&&y1>y2)||(x1>x2 && y1<y2)){
@@ -60,10 +51,23 @@ class Rectangle extends Shape{
         }else{
             y2 = y1 + (x2-x1)
         }
-        super(colors, [[x1,y1], [x1,y2], [x2,y2], [x2,y1]])
+        super(colors, [[x1,y1], [x1,y2], [x2,y2], [x2,y1]],[countEdges+3, countEdges+2,countEdges+1,countEdges+3, countEdges+1, countEdges])
+        countEdges += 4
     }
 
     draw(){
-        super.draw();
+        super.draw(gl.TRIANGLES);
+    }
+}
+
+class Rectangle extends Shape{ 
+    constructor(x1,y1,x2,y2, colors){
+        // gua masi mikir ytansformasinya
+        super(colors, [[x1,y1], [x1,y2], [x2,y2], [x2,y1]],[countEdges+3, countEdges+2,countEdges+1,countEdges+3, countEdges+1, countEdges])
+        countEdges += 4
+    }
+
+    draw(){
+        super.draw(gl.TRIANGLES);
     }
 }

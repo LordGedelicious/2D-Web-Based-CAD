@@ -5,8 +5,6 @@
 </head>
 <body>
     <canvas id="2d_canvas" width="500" height="500"></canvas>
-    <script src="js/general_script.js"></script>
-    <script src="./helper.js"></script>
     <!-- Asumsi awalnya make line dulu --> 
     <br>
     <div class="panel">
@@ -25,21 +23,20 @@
                 <td><button type="button" id="vertex-b-change">Change</td>
             </tr>
             <tr>
-                <td><label>Enable multi-line</label></td>
-                <td><input type="checkbox" id="multiline-checkbox"></td>
+                <td><label>Translation (By-X, By-Y)</label></td>
+                <td><input type="text" id="translate-x" value="0.0"></td>
+                <td><input type="text" id="translate-y" value="0.0"></td>
+                <td><button type="button" id="translation-change">Implement Translation</td>
             </tr>
             <tr>
-                <td><label>Enable multi-line</label></td>
-                <td><input type="checkbox" id="multiline-checkbox"></td>
-            </tr>
-            <tr>
-                <td><label>Enable multi-line</label></td>
-                <td><input type="checkbox" id="multiline-checkbox"></td>
+                <td><label>Dilation (Factor)</label></td>
+                <td><input type="text" id="dilate-factor" value="0.0"></td>
+                <td><button type="button" id="dilation-change">Implement Dilation</td>
             </tr>
             <tr>
                 <select name="shapes" id="shape">
-                    <option value="rectange">Kotak</option>
-                    <option value="saab">Saab</option>
+                    <option value="rectangle">Persegi Panjang</option>
+                    <option value="square">Persegi</option>
                     <option value="mercedes">Mercedes</option>
                     <option value="audi">Audi</option>
                   </select>
@@ -47,4 +44,6 @@
         </table>
         <input type="color" id="color-picker" name="head" value="#e66465" >
     </div>
+    <script src="js/general_script.js"></script>
+    <script src="./helper.js"></script>
 </body>

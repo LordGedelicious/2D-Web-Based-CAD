@@ -1,3 +1,6 @@
+var globEdges = [];
+var globVertices = [];
+var countEdges = 0;
 var shapes = [];
 var state ={
     isDone: 0,
@@ -13,8 +16,9 @@ var gl = canvas.getContext('webgl');
 var vertex_buffer = gl.createBuffer();
 // Create color buffer and pass the color data
 var color_buffer = gl.createBuffer();
+var edge_buffer = gl.createBuffer();
 // initialize canvas and program for webgl
-const initWebGL = (canvas)=>{
+const initWebGL = ()=>{
     let vertex_shader = gl.createShader(gl.VERTEX_SHADER);
 
     gl.shaderSource(vertex_shader,
@@ -61,7 +65,7 @@ const initWebGL = (canvas)=>{
     gl.vertexAttribPointer(color_location, 4, gl.FLOAT, false, 0, 0);
 }
 
-initWebGL(canvas);
+initWebGL();
  
 canvas.addEventListener('click', (e)=>{
     let x = 2*e.clientX/canvas.width-1;
@@ -78,7 +82,9 @@ canvas.addEventListener('click', (e)=>{
         shapes.push(new kindOfShape(state.pass_val.x,state.pass_val.y,x,y,Array(4).fill(tempColor))); 
         state.isDone = 0;
         console.log("masuk shape")
-        render();
+        shapes.forEach((shape)=>{
+            shape.draw();
+        })
     }else{
         state.pass_val.x = x;
         state.pass_val.y = y;
@@ -97,23 +103,30 @@ const setShape = (shape)=>{
             return new Circle();
         case 'rectangle':
             return Rectangle;
-        case 'triangle':
-            return new Triangle();
+        case 'square':
+            return Square;
         default:
             return Rectangle;
     }
 }
 
 
-function render() {
+function render(shape) {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    console.log('Rendering vertices...');
-    console.log(shapes)
-    for (let shape of shapes){
-        console.log(shape)
-        shape.draw();
-    }
+    console.log('Rendering edges...', globEdges);
+    gl.drawElements(shape, globEdges.length, gl.UNSIGNED_SHORT, 0);
+}
+
+function updateDrawing(shape){
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(globVertices.flat()), gl.STATIC_DRAW);
+    console.log("this:", globVertices)
+    // Update the edge buffer with the new edges data
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, edge_buffer); 
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(globEdges), gl.STATIC_DRAW);
+
+    render(shape);
 }
 
 render();
