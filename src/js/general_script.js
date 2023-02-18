@@ -2,6 +2,7 @@ var globEdges = [];
 var globVertices = [];
 var countEdges = 0;
 var shapes = [];
+var globColors = [];
 var state ={
     isDone: 0,
     pass_val: {
@@ -9,6 +10,19 @@ var state ={
         y:0,
     }
 }
+
+let clearCanvas = document.getElementById('clear-canvas');
+clearCanvas.addEventListener('click', ()=>{
+    globEdges = [];
+    globVertices = [];
+    shapes = [];
+    state.isDone = 0;
+    state.pass_val.x = 0;
+    state.pass_val.y = 0;
+    countEdges = 0;
+    console.log("clear canvas")
+    updateDrawing(gl.LINES);
+})
 
 let canvas = document.getElementById('2d_canvas');
 var gl = canvas.getContext('webgl');
@@ -69,30 +83,60 @@ initWebGL();
  
 canvas.addEventListener('click', (e)=>{
     let x = 2*e.clientX/canvas.width-1;
-    let y = 2*e.clientY/canvas.height-1;
+    let y = -(2*e.clientY/canvas.height-1);
     
     console.log(x,y)
 
-    let tempColor = hexColortoRGB(document.getElementById('color-picker').value);
-    let tempShape = document.getElementById('shape').value;
-
-    let kindOfShape = setShape(tempShape);
-
-    if(state.isDone){
-        shapes.push(new kindOfShape(state.pass_val.x,state.pass_val.y,x,y,Array(4).fill(tempColor))); 
-        state.isDone = 0;
-        console.log("masuk shape")
-        shapes.forEach((shape)=>{
-            shape.draw();
-        })
+    let isDrawing = document.getElementById('isDrawing').checked;
+    if(!isDrawing){
+        let clickedShape = getClickedShape(x,y);
+        console.log("shapenya: ",shapes[clickedShape])
+        if(clickedShape !== -1){
+            shapes[clickedShape] = shapes[clickedShape].changeColor(hexColortoRGB(document.getElementById('color-picker').value));
+            rebind();
+        }
     }else{
-        state.pass_val.x = x;
-        state.pass_val.y = y;
-        state.isDone = 1;
-    }
 
+        let tempColor = hexColortoRGB(document.getElementById('color-picker').value);
+        let tempShape = document.getElementById('shape').value;
+
+        let kindOfShape = setShape(tempShape);
+        console.log("ngambar:", state)
+        if(state.isDone === 1){
+            shapes.push(new kindOfShape(state.pass_val.x,state.pass_val.y,x,y,(tempColor))); 
+            state.isDone = 0;
+            console.log("masuk shape", shapes.length)
+            rebind();
+        }else{
+            state.pass_val.x = x;
+            state.pass_val.y = y;
+            state.isDone = 1;
+        }
+    }
     
 })
+
+const rebind = ()=>{
+    globEdges = []
+    globVertices = []
+    globColors = []
+    shapes.forEach((shape)=>{
+        shape.draw();
+    })
+}
+
+const getClickedShape = (x,y)=>{
+    for (let i = shapes.length-1; i >= 0; i--) {
+        if(!(shapes[i] instanceof Polygon)){
+            if(shapes[i].isInside(x,y)){
+                console.log("masuk")
+                return i;
+            }
+        }else{
+            return -1;
+        }
+    }
+}
 
 
 const setShape = (shape)=>{
@@ -121,11 +165,13 @@ function render(shape) {
 function updateDrawing(shape){
     gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(globVertices.flat()), gl.STATIC_DRAW);
-    console.log("this:", globVertices)
     // Update the edge buffer with the new edges data
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, edge_buffer); 
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(globEdges), gl.STATIC_DRAW);
 
+    //update color
+    gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(globColors), gl.STATIC_DRAW);
     render(shape);
 }
 

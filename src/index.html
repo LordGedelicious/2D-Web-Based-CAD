@@ -10,6 +10,7 @@
     <div class="panel">
         <h3>Customizations and Infos</h3>
         <table>
+            <tr><button type="button" id="clear-canvas">Clear Canvas</button></tr>
             <tr>
                 <td><label>Vertex A (X,Y)</label></td>
                 <td><input type="text" id="vertex-a-x" value="0.0"></td>
@@ -40,6 +41,13 @@
                     <option value="mercedes">Mercedes</option>
                     <option value="audi">Audi</option>
                   </select>
+            </tr>
+            <tr>
+                <label class="switch">
+                    drawing mode
+                    <input type="checkbox" id="isDrawing">
+                    <span class="slider round"></span>
+                  </label>
             </tr>
         </table>
         <input type="color" id="color-picker" name="head" value="#e66465" >
