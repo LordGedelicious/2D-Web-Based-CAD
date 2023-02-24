@@ -1,16 +1,5 @@
-var globEdges = [];
-var globVertices = [];
-var countEdges = 0;
-var shapes = [];
-var globColors = [];
-var state ={
-    isDone: 0,
-    pass_val: {
-        x: 0,
-        y:0,
-    }
-}
-
+const translateButton = document.getElementById('translation-change');
+const dilationButton = document.getElementById('dilation-change');
 let clearCanvas = document.getElementById('clear-canvas');
 clearCanvas.addEventListener('click', ()=>{
     globEdges = [];
@@ -42,6 +31,7 @@ const initWebGL = ()=>{
         void main() {
             vColor = color;
             gl_Position = vec4(position, 0.0, 1.0);
+            gl_PointSize = 5.0;
         }`);
     gl.compileShader(vertex_shader);
     
@@ -55,7 +45,7 @@ const initWebGL = ()=>{
         }`);
     gl.compileShader(fragment_shader);
     
-    // Create a shader program and attach the vertex and fragment shaders to it
+    // Cr[eate a shader program and attach the vertex and fragment shaders to it
     let program = gl.createProgram();
     gl.attachShader(program, vertex_shader);
     gl.attachShader(program, fragment_shader);
@@ -82,21 +72,29 @@ const initWebGL = ()=>{
 initWebGL();
  
 canvas.addEventListener('click', (e)=>{
-    let x = 2*e.clientX/canvas.width-1;
-    let y = -(2*e.clientY/canvas.height-1);
+    let x = 2*(e.clientX-20)/canvas.width-1;
+    let y = -(2*(e.clientY-20)/canvas.height-1);
     
     console.log(x,y)
 
     let isDrawing = document.getElementById('isDrawing').checked;
     if(!isDrawing){
-        let clickedShape = getClickedShape(x,y);
+        let node = getNode(x,y)
+        let clickedShape = -1;
+        clickedShape = getClickedShape(x,y);
+        state.clicked = clickedShape;
         console.log("shapenya: ",shapes[clickedShape])
-        if(clickedShape !== -1){
+        if(node){
+            //console.log("shapenya: ",shapes[node.idx], "indeks: ",ans)
+            shapes[node.idx]=shapes[node.idx].changeColorOnNode(hexColortoRGB(document.getElementById('color-picker').value),[node.x,node.y]);
+            rebind();
+        }
+        else if(clickedShape !== -1){
+            console.log("clicked shape: ",clickedShape)
             shapes[clickedShape] = shapes[clickedShape].changeColor(hexColortoRGB(document.getElementById('color-picker').value));
             rebind();
         }
     }else{
-
         let tempColor = hexColortoRGB(document.getElementById('color-picker').value);
         let tempShape = document.getElementById('shape').value;
 
@@ -116,10 +114,27 @@ canvas.addEventListener('click', (e)=>{
     
 })
 
+translateButton.addEventListener('click', ()=>{
+    console.log("clicked: ", state.clicked)
+    let x = document.getElementById('translate-x').value;
+    let y = document.getElementById('translate-y').value;
+    shapes[state.clicked] = shapes[state.clicked].translate(x,y);
+    rebind();
+})
+
+dilationButton.addEventListener('click', ()=>{
+    console.log("clicked: ", state.clicked)
+    let x = document.getElementById('dilate-factor').value;
+    shapes[state.clicked] = shapes[state.clicked].dilate(x);
+    rebind();
+})
+
+
 const rebind = ()=>{
     globEdges = []
     globVertices = []
     globColors = []
+    console.log("shapes: ",shapes)
     shapes.forEach((shape)=>{
         shape.draw();
     })
@@ -152,27 +167,6 @@ const setShape = (shape)=>{
         default:
             return Rectangle;
     }
-}
-
-
-function render(shape) {
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    console.log('Rendering edges...', globEdges);
-    gl.drawElements(shape, globEdges.length, gl.UNSIGNED_SHORT, 0);
-}
-
-function updateDrawing(shape){
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(globVertices.flat()), gl.STATIC_DRAW);
-    // Update the edge buffer with the new edges data
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, edge_buffer); 
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(globEdges), gl.STATIC_DRAW);
-
-    //update color
-    gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(globColors), gl.STATIC_DRAW);
-    render(shape);
 }
 
 render();
