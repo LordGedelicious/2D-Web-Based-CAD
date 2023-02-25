@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>(Polygon) 2D-Web-Based-CAD</title>
+</head>
+<body>
+    <canvas id="2d_canvas" width="500" height="500"></canvas>
+    <!-- Asumsi awalnya make line dulu --> 
+    <br>
+    <div class="panel">
+        <h3>Vertices List</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Vertex Name</th>
+                    <th>X</th>
+                    <th>Y</th>
+                    <th>Color</th>
+                    <th>Alpha</th>
+                    <th>Change</th>
+                </tr>
+            </thead>
+            <tbody id="vertices_list">
+                <!-- Initialize as empty and add as the user click on the canvas -->
+            </tbody>
+        </table>
+    </div>
+    <script src="/src/helper.js"></script>
+    <script src="/src/js/script_polygon.js"></script>
+</body>
