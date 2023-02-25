@@ -1,6 +1,7 @@
 const translateButton = document.getElementById('translation-change');
 const dilationButton = document.getElementById('dilation-change');
 const saveButton = document.getElementById('save');
+const loadButton = document.getElementById('load');
 let clearCanvas = document.getElementById('clear-canvas');
 clearCanvas.addEventListener('click', ()=>{
     shapes = [];
@@ -102,7 +103,7 @@ canvas.addEventListener('click', (e)=>{
         let kindOfShape = setShape(tempShape);
         console.log("ngambar:", state)
         if(state.isDone === 1){
-            shapes.push(new kindOfShape(state.pass_val.x,state.pass_val.y,x,y,(tempColor))); 
+            shapes.push(new kindOfShape(state.pass_val.x,state.pass_val.y,x,y,([tempColor]))); 
             state.isDone = 0;
             console.log("masuk shape", shapes.length)
             rebind();
@@ -131,21 +132,68 @@ dilationButton.addEventListener('click', ()=>{
 })
 
 saveButton.addEventListener('click', ()=>{
-
+    lshape = saveFile(shapeToFile());
 })
+
+const loadFile = document.getElementById('loadFile');
+loadFile.addEventListener('change', (e)=>{
+    var file = e.target.files[0];
+    var fr = new FileReader();
+    fr.onload = function(e) {
+        loadingFile(e.target.result);
+    }
+    fr.readAsText(file);
+    rebind();   
+})
+
+const loadingFile = (text)=>{
+    text = text.trim()
+    shapes = []
+    let kind = {};
+    let vert = []
+    let color = [];
+    let lines = text.split("\n");
+    lines.forEach(x =>{
+        target = x.trim()
+        if(target.length === 0) return;
+        if(target[0] === '/' && target[1] === '/'){
+            vert = [];
+            color = [];
+            shape = target.slice(3);
+            console.log("shape: ",shape)
+            kind = setShape(shape);
+        }else if(target[0] === '*'){
+            if(kind.name==="Polygon"){
+            }else if(kind.name==="Line"){
+                console.log("constructing: ",vert[0][0],vert[0][1],vert[1][0],vert[1][1],color)
+                shapes.push(new kind(vert[0][0],vert[0][1],vert[1][0],vert[1][1],color))
+            }else{
+                console.log("constructing: ",vert[0][0],vert[0][1],vert[2][0],vert[2][1],color)
+                shapes.push(new kind(vert[0][0],vert[0][1],vert[2][0],vert[2][1],color))
+            }
+        }else{
+            console.log("target: ",target )
+            let temp = target.split(" ");
+            vert.push([parseFloat(temp[0]),parseFloat(temp[1])]);
+            color.push([parseFloat(temp[2]),parseFloat(temp[3]),parseFloat(temp[4]),1]);
+        }
+    })
+    rebind();
+}
 
 const shapeToFile = () =>{
     strings = []
     shapes.forEach(x =>{
+        console.log("prin shape: ",x)
         let shapeName = (()=>{
-            if (x instanceof Line) return "Line"
-            else if (x instanceof Rectangle) return "Rectangle"
-            else if (x instanceof Square) return "Square"
-            else if (x instanceof Polygon) return "Polygon"
+            if (x instanceof Line) return "line"
+            else if (x instanceof Rectangle) return "rectangle"
+            else if (x instanceof Square) return "square"
+            else if (x instanceof Polygon) return "polygon"
         })();
-        strings.push(shapeName+ " " + x.toString());
+        strings.push("// "+shapeName+ "\n" + x.toString());
     })
-    return strings.join("\n");
+    return new Blob(strings, {type: "text/plain;charset=utf-8"});
 }
 
 const rebind = ()=>{
@@ -181,3 +229,17 @@ const setShape = (shape)=>{
 }
 
 updateDrawing();
+
+function saveFile(blob) {
+    let url = URL.createObjectURL(blob);
+    let a = document.createElement('a');
+    a.style.display = "none";
+    a.href = url;
+    a.download = Date.now() + ".txt";
+    document.body.appendChild(a);
+    window.requestAnimationFrame(function() {
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    })
+}
