@@ -128,6 +128,22 @@ class Square extends Shape{
         this.y2 = y2;
     }
 
+    translate(x,y){
+        super.translate(x,y)
+        this.x1 += x
+        this.x2 += x
+        this.y1 += y
+        this.y2 += y
+    }
+
+    dilate(x){
+        super.dilate(x)
+        this.x1 *= x
+        this.x2 *= x
+        this.y1 *= x
+        this.y2 *= x
+    }
+
     draw(){
         super.draw(gl.TRIANGLES);
     }
@@ -151,6 +167,22 @@ class Rectangle extends Shape{
         countEdges += 4
     }
 
+    translate(x,y){
+        super.translate(x,y)
+        this.x1 += x
+        this.x2 += x
+        this.y1 += y
+        this.y2 += y
+    }
+
+    dilate(x){
+        super.dilate(x)
+        this.x1 *= x
+        this.x2 *= x
+        this.y1 *= x
+        this.y2 *= x
+    }
+
     draw(){
         super.draw(gl.TRIANGLES);
     }
@@ -163,6 +195,39 @@ class Rectangle extends Shape{
     }
 }
 
+class Line extends Shape{
+    constructor(x1,y1,x2,y2, colors){
+        console.log(colors)
+        super(colors, [[x1,y1], [x2,y2]],[countEdges+1])
+        countEdges++
+    }
+
+    draw(){
+        super.draw(gl.LINES);
+    }
+
+    isInside(x,y){
+        let equation = (x1-x2)/(y1-y2) == (x-x2)/(y-y2)
+        let checkPos = (y1 <= y &&  y <= y2) || (y2 <= y && y <= y1)
+        return equation && checkPos
+    }
+
+    translate(x,y){
+        super.translate(x,y)
+        this.x1 += x
+        this.x2 += x
+        this.y1 += y
+        this.y2 += y
+    }
+
+    dilate(x){
+        super.dilate(x)
+        this.x1 *= x
+        this.x2 *= x
+        this.y1 *= x
+        this.y2 *= x
+    }
+}
 
 class Polygon extends Shape{
     constructor(){

@@ -98,7 +98,8 @@ canvas.addEventListener('click', (e)=>{
     }else{
         let tempColor = hexColortoRGB(document.getElementById('color-picker').value);
         let tempShape = document.getElementById('shape').value;
-
+        console.log("color for rend:", tempColor)
+        console.log("kind of shape:",  tempShape)
         let kindOfShape = setShape(tempShape);
         console.log("ngambar:", state)
         if(state.isDone === 1){
@@ -175,9 +176,7 @@ const getClickedShape = (x,y)=>{
 const setShape = (shape)=>{
     switch(shape){
         case 'line':
-            return new Line();
-        case 'circle':
-            return new Circle();
+            return new Line;
         case 'rectangle':
             return Rectangle;
         case 'square':
