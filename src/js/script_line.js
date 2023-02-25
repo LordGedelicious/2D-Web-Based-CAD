@@ -271,5 +271,3 @@ function updateDrawing() {
 
     render();
 }
-
-render();

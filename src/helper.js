@@ -29,6 +29,10 @@ class Color{
     }
 }
 
+function testHello (){
+    console.log("hello")
+}
+
 class Shape{
     constructor(color, vertices,edges){
         this.vertices = vertices;
