@@ -212,6 +212,15 @@ class Rectangle extends Shape{
             (x>=this.x1 && x<=this.x2 && y>=this.y2 && y<=this.y1) ||
             (x>=this.x2 && x<=this.x1 && y>=this.y1 && y<=this.y2)
     }
+
+    special(x,y){
+        x = parseFloat(x ? x : 0)
+        y = parseFloat(y ? y : 0)
+        this.x1 = this.x1 + x;
+        this.y1 = this.y1 + y;
+        this.vertices = [[this.x1,this.y1], [this.x2,this.y1], [this.x2,this.y2], [this.x1,this.y2]]
+
+    }
 }
 
 class Line extends Shape{
