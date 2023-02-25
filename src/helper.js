@@ -152,6 +152,27 @@ class Square extends Shape{
             (x>=this.x1 && x<=this.x2 && y>=this.y2 && y<=this.y1) ||
             (x>=this.x2 && x<=this.x1 && y>=this.y1 && y<=this.y2)
     }
+
+    special(x,y){
+        x = parseFloat(x ? x : 0)
+        y = parseFloat(y ? y : 0)
+        let factor = Math.abs(x) > Math.abs(y) ? x : y;
+        let x1 = this.x1 + factor;
+        let y1 = this.y1 + factor;
+        let x2 = this.x2
+        let y2 = this.y2
+        if((x1<x2&&y1>y2)||(x1>x2 && y1<y2)){
+            y2 = y1 + (x1-x2);
+        }else{
+            y2 = y1 + (x2-x1)
+        }
+        this.vertices = [[x1,y1], [x2,y1], [x2,y2], [x1,y2]]
+        this.x1 = x1;
+        this.y1 = y1;
+        this.x2 = x2;
+        this.y2 = y2;
+        console.log("vertices: ", this.vertices)
+    }
 }
 
 class Rectangle extends Shape{ 
