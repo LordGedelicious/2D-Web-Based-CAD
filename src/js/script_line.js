@@ -1,9 +1,6 @@
 const translateButton = document.getElementById('translation-change');
 const dilationButton = document.getElementById('dilation-change');
 
-const translateButton = document.getElementById('translation-change');
-const dilationButton = document.getElementById('dilation-change');
-
 /* Preparing the canvas and get WebGL context */
 let canvas = document.getElementById('2d_canvas');
 let gl = canvas.getContext('webgl');
@@ -84,20 +81,10 @@ canvas.addEventListener('click', function(event) {
 
     // Add the X and Y coordinates to the vertices list
     if (vertices.length > 1) {
-    if (vertices.length > 1) {
         // If there are more than 2 vertices, pop the nearest vertex from all vertices in the canvas
         let nearestVertex = getNearestVertex(2 * x / canvas.width - 1, -(2 * y / canvas.height - 1), vertices);
         if (nearestVertex == 0) {
-            let nearestVertex = getNearestVertex(2 * x / canvas.width - 1, -(2 * y / canvas.height - 1), vertices);
-        if (nearestVertex == 0) {
             vertices.shift();
-            vertices.unshift([2 * x / canvas.width - 1, -(2 * y / canvas.height - 1)]);
-        } else if (nearestVertex == 1) {
-            vertices.pop();
-            vertices.push([2 * x / canvas.width - 1, -(2 * y / canvas.height - 1)]);
-        }
-    } else {
-        vertices.push([2 * x / canvas.width - 1, -(2 * y / canvas.height - 1)]);
             vertices.unshift([2 * x / canvas.width - 1, -(2 * y / canvas.height - 1)]);
         } else if (nearestVertex == 1) {
             vertices.pop();
@@ -112,7 +99,6 @@ canvas.addEventListener('click', function(event) {
         edges.push(i, i + 1);
     }
 
-    updateDrawing();
     updateDrawing();
 });
 
