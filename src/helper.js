@@ -103,7 +103,7 @@ class Shape{
         for(let i=0;i<this.vertices.length;i++){
             str += this.vertices[i][0] + " " + this.vertices[i][1] + " " + this.colors[i][0] + " " + this.colors[i][1] + " " + this.colors[i][2] + "\n"
         } 
-        str += "*\n"
+        str += "*\n,"
 
         return str;
     }

@@ -160,9 +160,13 @@ const loadingFile = (text)=>{
             vert = [];
             color = [];
             shape = target.slice(3);
+            console.log("shape: ",shape)
             kind = setShape(shape);
         }else if(target[0] === '*'){
-            if(kind instanceof Polygon){
+            if(kind.name==="Polygon"){
+            }else if(kind.name==="Line"){
+                console.log("constructing: ",vert[0][0],vert[0][1],vert[1][0],vert[1][1],color)
+                shapes.push(new kind(vert[0][0],vert[0][1],vert[1][0],vert[1][1],color))
             }else{
                 console.log("constructing: ",vert[0][0],vert[0][1],vert[2][0],vert[2][1],color)
                 shapes.push(new kind(vert[0][0],vert[0][1],vert[2][0],vert[2][1],color))
@@ -182,10 +186,10 @@ const shapeToFile = () =>{
     shapes.forEach(x =>{
         console.log("prin shape: ",x)
         let shapeName = (()=>{
-            if (x instanceof Line) return "Line"
-            else if (x instanceof Rectangle) return "Rectangle"
-            else if (x instanceof Square) return "Square"
-            else if (x instanceof Polygon) return "Polygon"
+            if (x instanceof Line) return "line"
+            else if (x instanceof Rectangle) return "rectangle"
+            else if (x instanceof Square) return "square"
+            else if (x instanceof Polygon) return "polygon"
         })();
         strings.push("// "+shapeName+ "\n" + x.toString());
     })
