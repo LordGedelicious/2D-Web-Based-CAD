@@ -119,15 +119,15 @@ canvas.addEventListener('click', (e)=>{
 
 translateButton.addEventListener('click', ()=>{
     console.log("clicked: ", state.clicked)
-    let x = document.getElementById('translate-x').value;
-    let y = document.getElementById('translate-y').value;
+    let x = parseFloat(document.getElementById('translate-x').value);
+    let y = parseFloat(document.getElementById('translate-y').value);
     shapes[state.clicked].translate(x,y);
     rebind();
 })
 
 dilationButton.addEventListener('click', ()=>{
     console.log("clicked: ", state.clicked)
-    let x = document.getElementById('dilate-factor').value;
+    let x = parseFloat(document.getElementById('dilate-factor').value);
     shapes[state.clicked].dilate(x);
     rebind();
 })
