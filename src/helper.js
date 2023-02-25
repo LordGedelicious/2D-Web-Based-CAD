@@ -2,7 +2,6 @@ const hexColortoRGB = (hex)=>{
     return [Number('0x'+hex.substr(1,2)),Number('0x'+hex.substr(3,2)),Number('0x'+hex.substr(5,2))]
 }
 
-
 class Color{
     constructor(red, green, blue){
         this.red = red
