@@ -1,5 +1,6 @@
 const translateButton = document.getElementById('translation-change');
 const dilationButton = document.getElementById('dilation-change');
+const saveButton = document.getElementById('save');
 let clearCanvas = document.getElementById('clear-canvas');
 clearCanvas.addEventListener('click', ()=>{
     globEdges = [];
@@ -129,6 +130,23 @@ dilationButton.addEventListener('click', ()=>{
     rebind();
 })
 
+saveButton.addEventListener('click', ()=>{
+
+})
+
+const shapeToFile = () =>{
+    strings = []
+    shapes.forEach(x =>{
+        let shapeName = (()=>{
+            if (x instanceof Line) return "Line"
+            else if (x instanceof Rectangle) return "Rectangle"
+            else if (x instanceof Square) return "Square"
+            else if (x instanceof Polygon) return "Polygon"
+        })();
+        strings.push(shapeName+ " " + x.toString());
+    })
+    return strings.join("\n");
+}
 
 const rebind = ()=>{
     globEdges = []

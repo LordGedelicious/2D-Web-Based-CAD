@@ -98,6 +98,16 @@ class Shape{
         return this;
     }
 
+    toString(){
+        let str = "\\"
+        for(let i=0;i<this.vertices.length;i++){
+            str += this.vertices[i][0] + " " + this.vertices[i][1] + " " + this.colors[i*4] + " " + this.colors[i*4+1] + " " + this.colors[i*4+2] + "\n"
+        } 
+        str += "*"
+
+        return str;
+    }
+
 }
 
 class Square extends Shape{ 
