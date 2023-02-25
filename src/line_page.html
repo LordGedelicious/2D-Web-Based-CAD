@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>2D-Web-Based-CAD</title>
+</head>
+<body>
+    <canvas id="2d_canvas" width="500" height="500"></canvas>
+    <!-- Asumsi awalnya make line dulu --> 
+    <br>
+    <div class="panel">
+        <h3>Customizations and Infos</h3>
+        <table>
+            <tr>
+                <td><label>Vertex A (X,Y,RGB,A)</label></td>
+                <td><input type="text" id="vertex-a-x" value="0.0"></td>
+                <td><input type="text" id="vertex-a-y" value="0.0"></td>
+                <td><input type="color" id="color-picker-a" value="#ff0000" oninput="changeColor(this.value)"></td>
+                <td><input type="text" id="alpha-a" value="0.0"></td>
+                <td><button type="button" id="vertex-a-change">Change</td>
+            </tr>
+            <tr>
+                <td><label>Vertex B (X,Y)</label></td>
+                <td><input type="text" id="vertex-b-x" value="0.0"></td>
+                <td><input type="text" id="vertex-b-y" value="0.0"></td>
+                <td><input type="color" id="color-picker-b" value="#00ff00" oninput="changeColor(this.value)"></td>
+                <td><input type="text" id="alpha-b" value="0.0"></td>
+                <td><button type="button" id="vertex-b-change">Change</td>
+            </tr>
+            <tr>
+                <td><label>Translation (By-X, By-Y)</label></td>
+                <td><input type="text" id="translate-x" value="0.0"></td>
+                <td><input type="text" id="translate-y" value="0.0"></td>
+                <td><button type="button" id="translation-change">Implement Translation</td>
+            </tr>
+            <tr>
+                <td><label>Dilation (Factor)</label></td>
+                <td><input type="text" id="dilate-factor" value="0.0"></td>
+                <td><button type="button" id="dilation-change">Implement Dilation</td>
+            </tr>
+        </table>
+    </div>
+    <script src="/src/helper.js"></script>
+    <script src="/src/js/script_line.js"></script>
+</body>

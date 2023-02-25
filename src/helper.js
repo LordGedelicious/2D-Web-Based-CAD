@@ -15,7 +15,6 @@ var state ={
 const hexColortoRGB = (hex)=>{
     return [Number('0x'+hex.substr(1,2))/255,Number('0x'+hex.substr(3,2))/255,Number('0x'+hex.substr(5,2))/255,1]
 }
-
 const getDistance = (x1,y1,x2,y2)=>{
     let x = x1-x2;
     let y = y1-y2;
