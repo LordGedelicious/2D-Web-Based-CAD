@@ -1,6 +1,7 @@
 const translateButton = document.getElementById('translation-change');
 const dilationButton = document.getElementById('dilation-change');
 const saveButton = document.getElementById('save');
+const specialButton = document.getElementById('special');
 const loadButton = document.getElementById('load');
 let clearCanvas = document.getElementById('clear-canvas');
 clearCanvas.addEventListener('click', ()=>{
@@ -243,3 +244,16 @@ function saveFile(blob) {
         document.body.removeChild(a);
     })
 }
+
+
+specialButton.addEventListener('click',()=>{
+    console.log("clicked: ", state.clicked)
+    let x = document.getElementById('vertex-x').value;
+    let y = document.getElementById('vertex-y').value;
+    let isDrawing =document.getElementById('isDrawing').checked;
+    if(!isDrawing){
+        console.log("masukkk")
+        shapes[state.clicked].special(x,y);
+        rebind();
+    }
+})

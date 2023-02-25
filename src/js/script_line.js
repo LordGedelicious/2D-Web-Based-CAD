@@ -93,7 +93,7 @@ canvas.addEventListener('click', function(event) {
     } else {
         vertices.push([2 * x / canvas.width - 1, -(2 * y / canvas.height - 1)]);
     }
-    // Update the edges array
+    // Update the edges axrray
     edges = [];
     for (let i = 0; i < vertices.length - 1; i++) {
         edges.push(i, i + 1);
