@@ -71,7 +71,6 @@ class Shape{
             this.colors.push(color)
         }
         console.log("jadinya: ", this.colors)
-        return this;
     }
 
     changeColorOnNode(color, node){
@@ -80,7 +79,6 @@ class Shape{
                 this.colors[i] = color
             }
         }
-        return this;
     }
 
     dilate(x){
@@ -171,6 +169,7 @@ class Rectangle extends Shape{
         this.x2 += x
         this.y1 += y
         this.y2 += y
+        
     }
 
     dilate(x){
@@ -243,9 +242,9 @@ function updateDrawing(){
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
-    console.log(": ", shapes.length)
+    console.log(": ", shapes)
     for(let i=0;i<shapes.length;i++){
-        console.log(shapes[i])
+        console.log("shapenya",i,shapes[i])
         shapes[i].draw()
     }
 }
