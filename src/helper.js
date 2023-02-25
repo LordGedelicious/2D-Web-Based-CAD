@@ -38,17 +38,14 @@ class Shape{
         this.vertices = vertices;
         this.colors =[];
         this.edges = edges;
-        for(let idx = 0; idx<this.vertices.length; idx++){
-            this.colors.push(color)
+        console.log("color: ", color)
+        if(color.length !== this.vertices.length){
+            for(let idx = 0; idx<this.vertices.length; idx++){
+                this.colors.push(...color)
+            }
+        }else{
+            this.colors = color
         }
-    }
-
-    toString(){
-        return`
-            number of vertices: ${this.vertices.length}\t
-            vertices: ${this.vertices}\t
-            color per vertex: ${this.colors}\t
-        `
     }
 
     draw(shape){
@@ -102,11 +99,11 @@ class Shape{
     }
 
     toString(){
-        let str = "\\"
+        let str = ""
         for(let i=0;i<this.vertices.length;i++){
-            str += this.vertices[i][0] + " " + this.vertices[i][1] + " " + this.colors[i*4] + " " + this.colors[i*4+1] + " " + this.colors[i*4+2] + "\n"
+            str += this.vertices[i][0] + " " + this.vertices[i][1] + " " + this.colors[i][0] + " " + this.colors[i][1] + " " + this.colors[i][2] + "\n"
         } 
-        str += "*"
+        str += "*\n"
 
         return str;
     }
