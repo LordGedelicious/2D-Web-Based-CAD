@@ -3,24 +3,23 @@ const dilationButton = document.getElementById('dilation-change');
 const saveButton = document.getElementById('save');
 let clearCanvas = document.getElementById('clear-canvas');
 clearCanvas.addEventListener('click', ()=>{
-    globEdges = [];
-    globVertices = [];
     shapes = [];
     state.isDone = 0;
     state.pass_val.x = 0;
     state.pass_val.y = 0;
     countEdges = 0;
     console.log("clear canvas")
-    updateDrawing(gl.LINES);
+    updateDrawing();
 })
 
 let canvas = document.getElementById('2d_canvas');
 var gl = canvas.getContext('webgl');
 //initialize vertex buffer
-var vertex_buffer = gl.createBuffer();
 // Create color buffer and pass the color data
+
+var vertex_buffer = gl.createBuffer();
 var color_buffer = gl.createBuffer();
-var edge_buffer = gl.createBuffer();
+
 // initialize canvas and program for webgl
 const initWebGL = ()=>{
     let vertex_shader = gl.createShader(gl.VERTEX_SHADER);
@@ -150,20 +149,15 @@ const shapeToFile = () =>{
 }
 
 const rebind = ()=>{
-    globEdges = []
-    globVertices = []
-    globColors = []
     console.log("shapes: ",shapes)
-    shapes.forEach((shape)=>{
-        shape.draw();
-    })
+    updateDrawing();
 }
 
 const getClickedShape = (x,y)=>{
     for (let i = shapes.length-1; i >= 0; i--) {
         if(!(shapes[i] instanceof Polygon)){
             if(shapes[i].isInside(x,y)){
-                console.log("masuk")
+                console.log("masuk:", i)
                 return i;
             }
         }else{
@@ -176,7 +170,7 @@ const getClickedShape = (x,y)=>{
 const setShape = (shape)=>{
     switch(shape){
         case 'line':
-            return new Line;
+            return Line;
         case 'rectangle':
             return Rectangle;
         case 'square':
@@ -186,4 +180,4 @@ const setShape = (shape)=>{
     }
 }
 
-render();
+updateDrawing();

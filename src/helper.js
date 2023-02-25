@@ -1,8 +1,4 @@
-var globEdges = [];
-var globVertices = [];
-var countEdges = 0;
 var shapes = [];
-var globColors = [];
 var state ={
     isDone: 0,
     pass_val: {
@@ -36,12 +32,11 @@ class Color{
 class Shape{
     constructor(color, vertices,edges){
         this.vertices = vertices;
-        this.colors = []
-        for(let idx = 0; idx<vertices.length; idx++){
-            this.colors.push(...color)
-        }
+        this.colors =[];
         this.edges = edges;
-        this.edges_count = edges.length;
+        for(let idx = 0; idx<this.vertices.length; idx++){
+            this.colors.push(color)
+        }
     }
 
     toString(){
@@ -53,18 +48,27 @@ class Shape{
     }
 
     draw(shape){
-        globEdges.push(...this.edges)
-        globVertices.push(...this.vertices)
-        console.log("before", globColors)
-        globColors.push(...this.colors)
-        console.log("colors:", globColors)
-        updateDrawing(shape)
+        let vc = []
+        let cp = []
+        console.log("edges: ", this.colors)
+        this.edges.forEach((x)=>{
+            vc.push(this.vertices[x])
+            cp.push(...this.colors[x])
+        })
+
+        console.log("vc: ", vc, this.vertices.length)
+        gl.bindBuffer(gl.ARRAY_BUFFER,vertex_buffer)
+        gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(vc.flat()),gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER,color_buffer)
+        gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(cp.flat()),gl.STATIC_DRAW);
+        gl.drawArrays(shape,0,Math.floor(this.edges.length));
+
     }
 
     changeColor(color){
         this.colors = []
         for(let idx = 0; idx<this.vertices.length; idx++){
-            this.colors.push(...color)
+            this.colors.push(color)
         }
         console.log("jadinya: ", this.colors)
         return this;
@@ -73,9 +77,7 @@ class Shape{
     changeColorOnNode(color, node){
         for(let i=0;i<this.vertices.length;i++){
             if(this.vertices[i][0] === node[0] && this.vertices[i][1] === node[1]){
-                this.colors[i*4] = color[0]
-                this.colors[i*4+1] = color[1]
-                this.colors[i*4+2] = color[2]
+                this.colors[i] = color
             }
         }
         return this;
@@ -118,9 +120,7 @@ class Square extends Shape{
         }else{
             y2 = y1 + (x2-x1)
         }
-        super(colors, [[x1,y1], [x1,y2], [x2,y2], [x2,y1]],[countEdges+3, countEdges+2,countEdges+1,countEdges+3, countEdges+1, countEdges])
-        countEdges += 4
-
+        super(colors, [[x1,y1], [x2,y1], [x2,y2], [x1,y2]], [0,1,3,1,2,3])
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
@@ -158,12 +158,11 @@ class Square extends Shape{
 class Rectangle extends Shape{ 
     constructor(x1,y1,x2,y2, colors){
         // gua masi mikir ytansformasinya
-        super(colors, [[x1,y1], [x1,y2], [x2,y2], [x2,y1]],[countEdges+3, countEdges+2,countEdges+1,countEdges+3, countEdges+1, countEdges])
+        super(colors, [[x1,y1], [x2,y1], [x2,y2], [x1,y2]], [0,1,3,1,2,3])
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
-        countEdges += 4
     }
 
     translate(x,y){
@@ -197,8 +196,11 @@ class Rectangle extends Shape{
 class Line extends Shape{
     constructor(x1,y1,x2,y2, colors){
         console.log(colors)
-        super(colors, [[x1,y1], [x2,y2]],[countEdges+1])
-        countEdges++
+        super(colors, [[x1,y1], [x2,y2]],[0,1])
+        this.x1 = x1;
+        this.y1 = y1;
+        this.x2 = x2;
+        this.y2 = y2;
     }
 
     draw(){
@@ -206,8 +208,8 @@ class Line extends Shape{
     }
 
     isInside(x,y){
-        let equation = (x1-x2)/(y1-y2) == (x-x2)/(y-y2)
-        let checkPos = (y1 <= y &&  y <= y2) || (y2 <= y && y <= y1)
+        let equation = (this.x1-this.x2)/(this.y1-this.y2) == (x-this.x2)/(y-this.y2)
+        let checkPos = (this.y1 <= y &&  y <= this.y2) || (this.y2 <= y && y <= this.y1)
         return equation && checkPos
     }
 
@@ -236,28 +238,16 @@ class Polygon extends Shape{
 
 
 
-function render(shape) {
+
+function updateDrawing(){
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    console.log('Rendering edges...', globEdges);
-    gl.drawElements(shape, globEdges.length, gl.UNSIGNED_SHORT, 0);
-
-    //draw points
-    gl.drawArrays(gl.POINTS, 0, globVertices.length);
-}
-
-function updateDrawing(shape){
     gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(globVertices.flat()), gl.STATIC_DRAW);
-    // Update the edge buffer with the new edges data
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, edge_buffer); 
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(globEdges), gl.STATIC_DRAW);
-
-    //update color
-    gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(globColors), gl.STATIC_DRAW);
-
-    render(shape);
+    console.log(": ", shapes.length)
+    for(let i=0;i<shapes.length;i++){
+        console.log(shapes[i])
+        shapes[i].draw()
+    }
 }
 
 const getMinimumDistanceOfShape = (shape,x,y) =>{
@@ -301,7 +291,7 @@ const getNode = (x,y) =>{
             ans = i;
         }
     }
-    if(dist > 0.03) return null;
+    if(dist > 0.05) return null;
     ret.idx = ans;
     return ret;
 }
