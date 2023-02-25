@@ -240,7 +240,7 @@ class Line extends Shape{
     isInside(x,y){
         let equation = (this.x1-this.x2)/(this.y1-this.y2) == (x-this.x2)/(y-this.y2)
         let checkPos = (this.y1 <= y &&  y <= this.y2) || (this.y2 <= y && y <= this.y1)
-        return equation && checkPos
+        return  checkPos //&& equation
     }
 
     translate(x,y){
@@ -257,6 +257,13 @@ class Line extends Shape{
         this.x2 *= x
         this.y1 *= x
         this.y2 *= x
+    }
+    special(x,y){
+        x = parseFloat(x ? x : 0)
+        y = parseFloat(y ? y : 0)
+        this.x1 = this.x1 + x;
+        this.y1 = this.y1 + y;
+        this.vertices = [[this.x1,this.y1], [this.x2,this.y2]]
     }
 }
 
