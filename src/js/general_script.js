@@ -86,12 +86,12 @@ canvas.addEventListener('click', (e)=>{
         console.log("shapenya: ",shapes[clickedShape])
         if(node){
             //console.log("shapenya: ",shapes[node.idx], "indeks: ",ans)
-            shapes[node.idx]=shapes[node.idx].changeColorOnNode(hexColortoRGB(document.getElementById('color-picker').value),[node.x,node.y]);
+            shapes[node.idx].changeColorOnNode(hexColortoRGB(document.getElementById('color-picker').value),[node.x,node.y]);
             rebind();
         }
         else if(clickedShape !== -1){
             console.log("clicked shape: ",clickedShape)
-            shapes[clickedShape] = shapes[clickedShape].changeColor(hexColortoRGB(document.getElementById('color-picker').value));
+            shapes[clickedShape].changeColor(hexColortoRGB(document.getElementById('color-picker').value));
             rebind();
         }
     }else{
@@ -119,14 +119,14 @@ translateButton.addEventListener('click', ()=>{
     console.log("clicked: ", state.clicked)
     let x = document.getElementById('translate-x').value;
     let y = document.getElementById('translate-y').value;
-    shapes[state.clicked] = shapes[state.clicked].translate(x,y);
+    shapes[state.clicked].translate(x,y);
     rebind();
 })
 
 dilationButton.addEventListener('click', ()=>{
     console.log("clicked: ", state.clicked)
     let x = document.getElementById('dilate-factor').value;
-    shapes[state.clicked] = shapes[state.clicked].dilate(x);
+    shapes[state.clicked].dilate(x);
     rebind();
 })
 
