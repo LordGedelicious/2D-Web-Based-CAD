@@ -100,11 +100,13 @@ canvas.addEventListener('click', (e)=>{
     }
     else if (isMovePoint) {
         if (!movingPoint) {
-            movingPoint = true;
             let node = getNode(x,y);
-            selected.objectIdx = node.idx;
-            selected.pointIdx = getPointIdx(node.idx, node.x, node.y);
-            // console.log("selected: ", selected)
+            if (node != null) {
+                selected.objectIdx = node.idx;
+                selected.pointIdx = getPointIdx(node.idx, node.x, node.y);
+                // console.log("selected: ", selected)
+                movingPoint = true;
+            }
         }
         else {
             shapes[selected.objectIdx].moveVertex(x, y);
@@ -254,6 +256,8 @@ const setShape = (shape)=>{
             return Rectangle;
         case 'square':
             return Square;
+        case 'polygon':
+            return Polygon;
         default:
             return Rectangle;
     }
