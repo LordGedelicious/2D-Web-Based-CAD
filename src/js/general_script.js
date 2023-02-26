@@ -138,7 +138,9 @@ canvas.addEventListener('click', (e)=>{
             gl.bindBuffer(gl.ARRAY_BUFFER,vertex_buffer)
             console.log("temp state:", state.list_of)
             gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(state.list_of.flat()),gl.STATIC_DRAW);
+            gl.drawArrays(gl.TRIANGLE_FAN,0,state.list_of.length);
             gl.drawArrays(gl.POINTS,0,state.list_of.length);
+
         }else{
             state.list_of.push([x,y])
             state.is_ongoing_polygon = true;
