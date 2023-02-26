@@ -74,12 +74,13 @@ const initWebGL = ()=>{
 initWebGL();
  
 canvas.addEventListener('click', (e)=>{
-    let x = 2*(e.clientX-20)/canvas.width-1;
-    let y = -(2*(e.clientY-20)/canvas.height-1);
+    let x = 2*(e.clientX-27)/canvas.width -1;
+    let y = -(2*(e.clientY-27)/canvas.height-1);
     
     console.log(x,y)
 
     let isDrawing = document.getElementById('isDrawing').checked;
+    let isMovePoint = document.getElementById('isMovePoint').checked;
     if(!isDrawing){
         let node = getNode(x,y)
         let clickedShape = -1;
@@ -96,7 +97,23 @@ canvas.addEventListener('click', (e)=>{
             shapes[clickedShape].changeColor(hexColortoRGB(document.getElementById('color-picker').value));
             rebind();
         }
-    }else{
+    }
+    else if (isMovePoint) {
+        if (!movingPoint) {
+            movingPoint = true;
+            let node = getNode(x,y);
+            selected.objectIdx = node.idx;
+            selected.pointIdx = getPointIdx(node.idx, node.x, node.y);
+            // console.log("selected: ", selected)
+        }
+        else {
+            shapes[selected.objectIdx].moveVertex(x, y);
+            rebind()
+            console.log(shapes[selected.objectIdx].x1, shapes[selected.objectIdx].y1, shapes[selected.objectIdx].x2, shapes[selected.objectIdx].y2)
+            movingPoint = false;
+        }
+    }
+    else{
         let tempColor = hexColortoRGB(document.getElementById('color-picker').value);
         let tempShape = document.getElementById('shape').value;
         console.log("color for rend:", tempColor)
@@ -115,6 +132,19 @@ canvas.addEventListener('click', (e)=>{
         }
     }
     
+})
+
+canvas.addEventListener("mousemove", (e) => {
+    let x = 2*(e.clientX-27)/canvas.width -1;
+    let y = -(2*(e.clientY-27)/canvas.height-1);
+
+    let isDrawing = document.getElementById('isDrawing').checked;
+    let isMovePoint = document.getElementById('isMovePoint').checked;
+    
+    if (isMovePoint && isDrawing && movingPoint) {
+        shapes[selected.objectIdx].moveVertex(x, y);
+        rebind()
+    }
 })
 
 translateButton.addEventListener('click', ()=>{

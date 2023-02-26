@@ -7,6 +7,11 @@ var state ={
     },
     clicked: 0,
 }
+var movingPoint = false;
+var selected = {
+    objectIdx: -1,
+    pointIdx: -1
+}
 
 const hexColortoRGB = (hex)=>{
     return [Number('0x'+hex.substr(1,2))/255,Number('0x'+hex.substr(3,2))/255,Number('0x'+hex.substr(5,2))/255,1]
@@ -173,6 +178,59 @@ class Square extends Shape{
         this.y2 = y2;
         console.log("vertices: ", this.vertices)
     }
+    moveVertex(x, y) {
+        const x1 = this.vertices[(2+selected.pointIdx) % 4][0];
+        const y1 = this.vertices[(2+selected.pointIdx) % 4][1];
+        
+        const temp = Math.max(Math.abs(y1 - y), Math.abs(x1 - x));
+        
+        if (x1 > x) { 
+            x = x1 - temp; 
+        } else { 
+            x = x1 + temp; 
+        }
+    
+        if (y1 > y) { 
+            y = y1 - temp; 
+        } 
+        else { 
+            y = y1 + temp; 
+        }
+
+        if (selected.pointIdx === 0) {
+            this.vertices[0][0] = x;
+            this.vertices[0][1] = y;
+            this.vertices[1][1] = y;
+            this.vertices[3][0] = x;
+            
+            this.x1 = x;
+            this.y1 = y;
+        }
+        else if (selected.pointIdx === 1) {
+            this.vertices[1][0] = x;
+            this.vertices[1][1] = y;
+            this.vertices[0][1] = y;
+            this.vertices[2][0] = x;
+            this.x2 = x;
+            this.y1 = y;
+        }
+        else if (selected.pointIdx === 2) {
+            this.vertices[2][0] = x;
+            this.vertices[2][1] = y;
+            this.vertices[1][0] = x;
+            this.vertices[3][1] = y;
+            this.x2 = x;
+            this.y2 = y;
+        }
+        else {
+            this.vertices[3][0] = x;
+            this.vertices[3][1] = y;
+            this.vertices[0][0] = x;
+            this.vertices[2][1] = y;
+            this.x1 = x;
+            this.y2 = y;
+        }
+    }
 }
 
 class Rectangle extends Shape{ 
@@ -219,7 +277,41 @@ class Rectangle extends Shape{
         this.x1 = this.x1 + x;
         this.y1 = this.y1 + y;
         this.vertices = [[this.x1,this.y1], [this.x2,this.y1], [this.x2,this.y2], [this.x1,this.y2]]
-
+    }
+    
+    moveVertex(x, y) {
+        if (selected.pointIdx === 0) {
+            this.vertices[0][0] = x;
+            this.vertices[0][1] = y;
+            this.vertices[1][1] = y;
+            this.vertices[3][0] = x;
+            this.x1 = x;
+            this.y1 = y;
+        }
+        else if (selected.pointIdx === 1) {
+            this.vertices[1][0] = x;
+            this.vertices[1][1] = y;
+            this.vertices[0][1] = y;
+            this.vertices[2][0] = x;
+            this.x2 = x;
+            this.y1 = y;
+        }
+        else if (selected.pointIdx === 2) {
+            this.vertices[2][0] = x;
+            this.vertices[2][1] = y;
+            this.vertices[1][0] = x;
+            this.vertices[3][1] = y;
+            this.x2 = x;
+            this.y2 = y;
+        }
+        else {
+            this.vertices[3][0] = x;
+            this.vertices[3][1] = y;
+            this.vertices[0][0] = x;
+            this.vertices[2][1] = y;
+            this.x1 = x;
+            this.y2 = y;
+        }
     }
 }
 
@@ -264,6 +356,23 @@ class Line extends Shape{
         this.x1 = this.x1 + x;
         this.y1 = this.y1 + y;
         this.vertices = [[this.x1,this.y1], [this.x2,this.y2]]
+    }
+
+    moveVertex(x, y) {
+        if (selected.pointIdx === 0) {
+            this.vertices[0][0] = x;
+            this.vertices[0][1] = y;
+
+            this.x1 = x;
+            this.y1 = y;
+        }
+        else {
+            this.vertices[1][0] = x;
+            this.vertices[1][1] = y;
+            
+            this.x2 = x;
+            this.y2 = y;
+        }
     }
 }
 
@@ -328,7 +437,14 @@ const getNode = (x,y) =>{
             ans = i;
         }
     }
-    if(dist > 0.05) return null;
+    if(dist > 0.04) return null;
     ret.idx = ans;
     return ret;
+}
+
+const getPointIdx = (idx, x,y) => {
+    if (x === shapes[idx].vertices[0][0] && y === shapes[idx].vertices[0][1]) return 0;
+    else if (x === shapes[idx].vertices[1][0] && y === shapes[idx].vertices[1][1]) return 1;
+    else if (x === shapes[idx].vertices[2][0] && y === shapes[idx].vertices[2][1]) return 2;
+    else return 3;
 }
