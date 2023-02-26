@@ -381,9 +381,11 @@ class Line extends Shape{
     }
 }
 
+
 class Polygon extends Shape{
     constructor(vertices, colors){
         super(colors, vertices,[...Array(vertices.length).keys(),0]);
+        this.convexHull();
     }
 
     draw(){
@@ -410,17 +412,72 @@ class Polygon extends Shape{
     }
 
     removeNode(id){
-        this.vertices.splice(id,1)
+        console.log("slicing",id)
+        for(let i=0;i<this.vertices.length;i++){
+            if(this.vertices[i][0]===id[0] && this.vertices[i][1]===id[1]){
+                this.vertices.splice(i,1)
+                this.colors.splice(i,1)
+            }
+        }
         this.edges = [...Array(this.vertices.length).keys(),0]
     }
 
     addNode(p,color){
         this.vertices.push(p)
+        this.convexHull()
+        for(let i=0;i<this.vertices.length;i++){
+            if(this.vertices[i][0]===p[0] && this.vertices[i][1]===p[1]){
+                
+            }
+        }
         console.log("lelah",this.colors,color)
         this.colors.push(color)
         this.edges = [...Array(this.vertices.length).keys(),0]
     }
+
+
+
+    orientation(p,q,r){
+        let val = (q[1] - p[1]) * (r[0] - q[0]) -
+                (q[0] - p[0]) * (r[1] - q[1]);
+        if (val == 0) return 0;  // colinear
+        return (val > 0)? 1: 2; // clock or counterclock wise
+    }
+
+
+    convexHull(){
+        let hull = [];
+
+        let l = 0;
+
+        for(let i=0;i<this.vertices.length;i++){
+            if(this.vertices[i][0] < this.vertices[l][0]){
+                l = i;
+            }
+        }
+
+        let p =l, q;
+
+        do{
+            hull.push(this.vertices[p]);
+
+            q = (p+1) % this.vertices.length;
+
+            for(let i=0;i<this.vertices.length;i++){
+                if(this.orientation(this.vertices[p], this.vertices[i], this.vertices[q]) == 2){
+                    q = i;
+                }
+            }
+
+            p = q;
+        }while(p!=l);
+
+        this.vertices = hull;
+        this.edges = [...Array(this.vertices.length).keys(),0]
+    }
 }
+
+
 
 
 function updateDrawing(){

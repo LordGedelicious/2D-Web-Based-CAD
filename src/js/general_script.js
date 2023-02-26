@@ -105,15 +105,15 @@ canvas.addEventListener('click', (e)=>{
         let node = getNode(x,y)
         let clickedShape = -1;
         clickedShape = getClickedShape(x,y);
-        if(clickedShape !== undefined){
+        if(clickedShape !== -1){
             console.log("clicked shape--: ",clickedShape)
             state.poly = clickedShape;
         }
         if(node){
             shapes[node.idx].removeNode([node.x,node.y]);
             rebind();
-        }else if(clickedShape === undefined){
-            console.log("lalalalala")
+        }else if(clickedShape === -1 && state.poly !== -1){
+            console.log("lalalalala", state.poly)
             shapes[state.poly].addNode([x,y],[tempColor]);
             rebind();
         }
@@ -140,9 +140,14 @@ canvas.addEventListener('click', (e)=>{
             gl.bindBuffer(gl.ARRAY_BUFFER,vertex_buffer)
             console.log("temp state:", state.list_of)
             gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(state.list_of.flat()),gl.STATIC_DRAW);
+            gl.drawArrays(gl.TRIANGLE_FAN,0,state.list_of.length);
             gl.drawArrays(gl.POINTS,0,state.list_of.length);
+
         }else{
             state.list_of.push([x,y])
+            rebind();
+            gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(state.list_of.flat()),gl.STATIC_DRAW);
+            gl.drawArrays(gl.POINTS,0,1);
             state.is_ongoing_polygon = true;
 
         }
@@ -274,6 +279,7 @@ const getClickedShape = (x,y)=>{
             return i;
         }
     }
+    return -1;
 }
 
 
@@ -334,21 +340,6 @@ canvas.addEventListener('contextmenu', (e)=>{
         rebind();
     }
 })
-
-
-const finSide=(p1,p2,p)=>{
-    val = (p2[0]-p1[0])*(p[1]-p1[1]) - (p2[1]-p1[1])*(p[0]-p1[0]);
-    if(val>0) return 1;
-    else if(val<0) return -1;
-    else return 0;
-}
-
-const lineDist = (p1,p2,p)=>{
-    return Math.abs((p[1]-p1[1])*(p2[0]-p1[0]) - (p[0]-p1[0])*(p2[1]-p1[1]));
-}
-
-const quickHull = (points, n)=>{
-}
 
 const shapeMode = document.getElementById('shape');
 
