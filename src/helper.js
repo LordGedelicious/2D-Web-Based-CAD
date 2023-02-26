@@ -5,6 +5,7 @@ var state ={
         x: 0,
         y:0,
     },
+    poly: -1,
     is_ongoing_polygon: false,
     clicked: 0,
     list_of: []
@@ -407,10 +408,19 @@ class Polygon extends Shape{
         this.vertices[selected.pointIdx][0] = x;
         this.vertices[selected.pointIdx][1] = y;
     }
+
+    removeNode(id){
+        this.vertices.splice(id,1)
+        this.edges = [...Array(this.vertices.length).keys(),0]
+    }
+
+    addNode(p,color){
+        this.vertices.push(p)
+        console.log("lelah",this.colors,color)
+        this.colors.push(color)
+        this.edges = [...Array(this.vertices.length).keys(),0]
+    }
 }
-
-
-
 
 
 function updateDrawing(){
@@ -485,3 +495,4 @@ const getPointIdx = (idx, x,y) => {
         if(shapes[idx].vertices[i][0] === x && shapes[idx].vertices[i][1] === y) return i;
     }
 }
+

@@ -80,7 +80,7 @@ canvas.addEventListener('click', (e)=>{
     let y = -(2*(e.clientY-27)/canvas.height-1);
     let tempShape = document.getElementById('shape').value;
     let tempColor = hexColortoRGB(document.getElementById('color-picker').value);
-    
+    let isEditPolygon = document.getElementById('isEditPolygonMode').checked;
     console.log(x,y)
 
     let isDrawing = document.getElementById('isDrawing').checked;
@@ -101,8 +101,23 @@ canvas.addEventListener('click', (e)=>{
             shapes[clickedShape].changeColor(hexColortoRGB(document.getElementById('color-picker').value));
             rebind();
         }
-    }
-    else if (isMovePoint) {
+    }else if(isEditPolygon&&tempShape === 'polygon'){
+        let node = getNode(x,y)
+        let clickedShape = -1;
+        clickedShape = getClickedShape(x,y);
+        if(clickedShape !== undefined){
+            console.log("clicked shape--: ",clickedShape)
+            state.poly = clickedShape;
+        }
+        if(node){
+            shapes[node.idx].removeNode([node.x,node.y]);
+            rebind();
+        }else if(clickedShape === undefined){
+            console.log("lalalalala")
+            shapes[state.poly].addNode([x,y],[tempColor]);
+            rebind();
+        }
+    }else if (isMovePoint) {
         if (!movingPoint) {
             movingPoint = true;
             let node = getNode(x,y);
@@ -331,3 +346,15 @@ const lineDist = (p1,p2,p)=>{
 
 const quickHull = (points, n)=>{
 }
+
+const shapeMode = document.getElementById('shape');
+
+shapeMode.addEventListener('change', (e) => {
+    if(e.target.value === 'polygon'){
+        document.getElementById('polygon').style.display = 'block';
+        document.getElementById('special-mode').style.display = 'none';
+    }else{
+        document.getElementById('polygon').style.display = 'none';
+        document.getElementById('special-mode').style.display = 'block';
+    }
+})
