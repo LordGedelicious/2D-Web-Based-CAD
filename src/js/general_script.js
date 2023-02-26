@@ -124,6 +124,7 @@ canvas.addEventListener('click', (e)=>{
         console.log("ngambar:", state)
         if(state.isDone === 1){
             shapes.push(new kindOfShape(state.pass_val.x,state.pass_val.y,x,y,([tempColor]))); 
+            console.log(state.pass_val.x,state.pass_val.y,x,y)
             state.isDone = 0;
             console.log("masuk shape", shapes.length)
             rebind();

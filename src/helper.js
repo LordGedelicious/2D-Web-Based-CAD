@@ -443,8 +443,7 @@ const getNode = (x,y) =>{
 }
 
 const getPointIdx = (idx, x,y) => {
-    if (x === shapes[idx].vertices[0][0] && y === shapes[idx].vertices[0][1]) return 0;
-    else if (x === shapes[idx].vertices[1][0] && y === shapes[idx].vertices[1][1]) return 1;
-    else if (x === shapes[idx].vertices[2][0] && y === shapes[idx].vertices[2][1]) return 2;
-    else return 3;
+    for(let i = 0; i < shapes[idx].vertices.length; i++) {
+        if(shapes[idx].vertices[i][0] === x && shapes[idx].vertices[i][1] === y) return i;
+    }
 }
