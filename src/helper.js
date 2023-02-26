@@ -5,7 +5,9 @@ var state ={
         x: 0,
         y:0,
     },
+    is_ongoing_polygon: false,
     clicked: 0,
+    list_of: []
 }
 var movingPoint = false;
 var selected = {
@@ -62,12 +64,14 @@ class Shape{
             cp.push(...this.colors[x])
         })
 
-        console.log("vc: ", vc, this.vertices.length)
+        console.log("vc: ", vc, this.vertices)
         gl.bindBuffer(gl.ARRAY_BUFFER,vertex_buffer)
         gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(vc.flat()),gl.STATIC_DRAW);
         gl.bindBuffer(gl.ARRAY_BUFFER,color_buffer)
         gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(cp.flat()),gl.STATIC_DRAW);
         gl.drawArrays(shape,0,Math.floor(this.edges.length));
+        gl.drawArrays(gl.POINTS,0,(this.vertices.length)+1);
+
 
     }
 
@@ -108,7 +112,7 @@ class Shape{
         for(let i=0;i<this.vertices.length;i++){
             str += this.vertices[i][0] + " " + this.vertices[i][1] + " " + this.colors[i][0] + " " + this.colors[i][1] + " " + this.colors[i][2] + "\n"
         } 
-        str += "*\n,"
+        str += "*\n"
 
         return str;
     }
@@ -243,7 +247,7 @@ class Rectangle extends Shape{
         this.y2 = y2;
     }
 
-    translate(x,y){
+    translate(x,zy){
         super.translate(x,y)
         this.x1 += x
         this.x2 += x
@@ -377,10 +381,34 @@ class Line extends Shape{
 }
 
 class Polygon extends Shape{
-    constructor(){
-        super();
+    constructor(vertices, colors){
+        super(colors, vertices,[...Array(vertices.length).keys(),0]);
+    }
+
+    draw(){
+        super.draw(gl.TRIANGLE_FAN);
+    }
+
+    isInside(x,y){
+        //https://stackoverflow.com/questions/22521982/check-if-point-is-inside-a-polygon
+        let inside = false;
+        for (let i = 0, j = this.vertices.length - 1; i < this.vertices.length; j = i++) {
+            let xi = this.vertices[i][0], yi = this.vertices[i][1];
+            let xj = this.vertices[j][0], yj = this.vertices[j][1];
+        
+            let intersect = ((yi > y) != (yj > y))
+                && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
+        }
+        return inside;
+    }
+
+    moveVertex(x,y){
+        this.vertices[selected.pointIdx][0] = x;
+        this.vertices[selected.pointIdx][1] = y;
     }
 }
+
 
 
 
@@ -388,7 +416,6 @@ class Polygon extends Shape{
 function updateDrawing(){
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
     console.log(": ", shapes)
     for(let i=0;i<shapes.length;i++){
         console.log("shapenya",i,shapes[i])
@@ -419,6 +446,17 @@ const getMinimumDistanceOfShape = (shape,x,y) =>{
         let ret = points.sort((a,b)=>a.dist-b.dist)[0]
         console.log("min ",ret)
         return ret;
+    }else{
+        let points = []
+        for(let i = 0; i<shape.vertices.length; i++){
+            points.push({
+                x: shape.vertices[i][0],
+                y: shape.vertices[i][1],
+                dist: getDistance(x, y, shape.vertices[i][0], shape.vertices[i][1])
+            })
+        }
+        let ret = points.sort((a,b)=>a.dist-b.dist)[0]
+        return ret;
     }
 }
 
@@ -443,8 +481,7 @@ const getNode = (x,y) =>{
 }
 
 const getPointIdx = (idx, x,y) => {
-    if (x === shapes[idx].vertices[0][0] && y === shapes[idx].vertices[0][1]) return 0;
-    else if (x === shapes[idx].vertices[1][0] && y === shapes[idx].vertices[1][1]) return 1;
-    else if (x === shapes[idx].vertices[2][0] && y === shapes[idx].vertices[2][1]) return 2;
-    else return 3;
+    for(let i =0; i<shapes[idx].vertices.length; i++){
+        if(shapes[idx].vertices[i][0] === x && shapes[idx].vertices[i][1] === y) return i;
+    }
 }
