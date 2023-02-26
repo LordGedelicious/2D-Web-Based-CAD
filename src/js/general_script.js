@@ -119,11 +119,13 @@ canvas.addEventListener('click', (e)=>{
         }
     }else if (isMovePoint) {
         if (!movingPoint) {
-            movingPoint = true;
             let node = getNode(x,y);
-            selected.objectIdx = node.idx;
-            selected.pointIdx = getPointIdx(node.idx, node.x, node.y);
-            // console.log("selected: ", selected)
+            if (node != null) {
+                selected.objectIdx = node.idx;
+                selected.pointIdx = getPointIdx(node.idx, node.x, node.y);
+                // console.log("selected: ", selected)
+                movingPoint = true;
+            }
         }
         else {
             shapes[selected.objectIdx].moveVertex(x, y);
@@ -157,6 +159,7 @@ canvas.addEventListener('click', (e)=>{
         console.log("ngambar:", state)
         if(state.isDone === 1){
             shapes.push(new kindOfShape(state.pass_val.x,state.pass_val.y,x,y,([tempColor]))); 
+            console.log(state.pass_val.x,state.pass_val.y,x,y)
             state.isDone = 0;
             console.log("masuk shape", shapes.length)
             rebind();
