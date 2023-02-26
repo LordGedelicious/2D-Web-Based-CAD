@@ -10,6 +10,8 @@ clearCanvas.addEventListener('click', ()=>{
     state.pass_val.x = 0;
     state.pass_val.y = 0;
     countEdges = 0;
+    state.is_ongoing_polygon = false;
+    state.list_of = [];
     console.log("clear canvas")
     updateDrawing();
 })
@@ -76,7 +78,9 @@ initWebGL();
 canvas.addEventListener('click', (e)=>{
     let x = 2*(e.clientX-27)/canvas.width -1;
     let y = -(2*(e.clientY-27)/canvas.height-1);
-    
+    let tempShape = document.getElementById('shape').value;
+    let tempColor = hexColortoRGB(document.getElementById('color-picker').value);
+    let isEditPolygon = document.getElementById('isEditPolygonMode').checked;
     console.log(x,y)
 
     let isDrawing = document.getElementById('isDrawing').checked;
@@ -86,7 +90,7 @@ canvas.addEventListener('click', (e)=>{
         let clickedShape = -1;
         clickedShape = getClickedShape(x,y);
         state.clicked = clickedShape;
-        console.log("shapenya: ",shapes[clickedShape])
+        console.log("shapenya: ",[node])
         if(node){
             //console.log("shapenya: ",shapes[node.idx], "indeks: ",ans)
             shapes[node.idx].changeColorOnNode(hexColortoRGB(document.getElementById('color-picker').value),[node.x,node.y]);
@@ -97,8 +101,23 @@ canvas.addEventListener('click', (e)=>{
             shapes[clickedShape].changeColor(hexColortoRGB(document.getElementById('color-picker').value));
             rebind();
         }
-    }
-    else if (isMovePoint) {
+    }else if(isEditPolygon&&tempShape === 'polygon'){
+        let node = getNode(x,y)
+        let clickedShape = -1;
+        clickedShape = getClickedShape(x,y);
+        if(clickedShape !== undefined){
+            console.log("clicked shape--: ",clickedShape)
+            state.poly = clickedShape;
+        }
+        if(node){
+            shapes[node.idx].removeNode([node.x,node.y]);
+            rebind();
+        }else if(clickedShape === undefined){
+            console.log("lalalalala")
+            shapes[state.poly].addNode([x,y],[tempColor]);
+            rebind();
+        }
+    }else if (isMovePoint) {
         if (!movingPoint) {
             let node = getNode(x,y);
             if (node != null) {
@@ -114,10 +133,21 @@ canvas.addEventListener('click', (e)=>{
             console.log(shapes[selected.objectIdx].x1, shapes[selected.objectIdx].y1, shapes[selected.objectIdx].x2, shapes[selected.objectIdx].y2)
             movingPoint = false;
         }
+    }else if(tempShape === 'polygon'){
+        if(state.is_ongoing_polygon){
+            state.list_of.push([x,y])
+            rebind()
+            gl.bindBuffer(gl.ARRAY_BUFFER,vertex_buffer)
+            console.log("temp state:", state.list_of)
+            gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(state.list_of.flat()),gl.STATIC_DRAW);
+            gl.drawArrays(gl.POINTS,0,state.list_of.length);
+        }else{
+            state.list_of.push([x,y])
+            state.is_ongoing_polygon = true;
+
+        }
     }
     else{
-        let tempColor = hexColortoRGB(document.getElementById('color-picker').value);
-        let tempShape = document.getElementById('shape').value;
         console.log("color for rend:", tempColor)
         console.log("kind of shape:",  tempShape)
         let kindOfShape = setShape(tempShape);
@@ -198,6 +228,8 @@ const loadingFile = (text)=>{
             kind = setShape(shape);
         }else if(target[0] === '*'){
             if(kind.name==="Polygon"){
+                console.log("constructing: ",vert,color)
+                shapes.push(new kind(vert,color))
             }else if(kind.name==="Line"){
                 console.log("constructing: ",vert[0][0],vert[0][1],vert[1][0],vert[1][1],color)
                 shapes.push(new kind(vert[0][0],vert[0][1],vert[1][0],vert[1][1],color))
@@ -237,13 +269,9 @@ const rebind = ()=>{
 
 const getClickedShape = (x,y)=>{
     for (let i = shapes.length-1; i >= 0; i--) {
-        if(!(shapes[i] instanceof Polygon)){
-            if(shapes[i].isInside(x,y)){
-                console.log("masuk:", i)
-                return i;
-            }
-        }else{
-            return -1;
+        if(shapes[i].isInside(x,y)){
+            console.log("masuk:", i)
+            return i;
         }
     }
 }
@@ -290,5 +318,46 @@ specialButton.addEventListener('click',()=>{
         console.log("masukkk")
         shapes[state.clicked].special(x,y);
         rebind();
+    }
+})
+
+
+canvas.addEventListener('contextmenu', (e)=>{
+    if(state.is_ongoing_polygon){
+        state.is_ongoing_polygon = false;
+        state.isDone = 0;
+        let tempColor = hexColortoRGB(document.getElementById('color-picker').value);
+        state.is_ongoing_polygon = false;
+        shapes.push(new Polygon(state.list_of, [tempColor]));
+        state.list_of = [];
+        console.log("masuk shape: ", state.list_of)
+        rebind();
+    }
+})
+
+
+const finSide=(p1,p2,p)=>{
+    val = (p2[0]-p1[0])*(p[1]-p1[1]) - (p2[1]-p1[1])*(p[0]-p1[0]);
+    if(val>0) return 1;
+    else if(val<0) return -1;
+    else return 0;
+}
+
+const lineDist = (p1,p2,p)=>{
+    return Math.abs((p[1]-p1[1])*(p2[0]-p1[0]) - (p[0]-p1[0])*(p2[1]-p1[1]));
+}
+
+const quickHull = (points, n)=>{
+}
+
+const shapeMode = document.getElementById('shape');
+
+shapeMode.addEventListener('change', (e) => {
+    if(e.target.value === 'polygon'){
+        document.getElementById('polygon').style.display = 'block';
+        document.getElementById('special-mode').style.display = 'none';
+    }else{
+        document.getElementById('polygon').style.display = 'none';
+        document.getElementById('special-mode').style.display = 'block';
     }
 })
